@@ -5,11 +5,11 @@ namespace BasicCrud\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method self prefix($prefix)
- * @method self model($model)
- * @method self controller($controller)
- * @method self binding($binding)
- * @method void register()
+ * @method static self prefix($prefix)
+ * @method static self model($model)
+ * @method static self controller($controller)
+ * @method static self binding($binding)
+ * @method static void register()
  */
 class BasicCrudRoutes extends Facade
 {
