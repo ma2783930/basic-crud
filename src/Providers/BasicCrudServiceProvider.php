@@ -16,6 +16,6 @@ class BasicCrudServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__ . '../../lang', 'basic-crud');
+        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'basic-crud');
     }
 }
