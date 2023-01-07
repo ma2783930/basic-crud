@@ -72,10 +72,10 @@ class BasicCrudRouteHelper
                      Route::get('/', 'list')->name('list');
                  }
                  if (method_exists(new $this->controller, 'update')) {
-                     Route::put("{{$binding}}", 'update')->name('update');
+                     Route::put("{id}", 'update')->name('update');
                  }
                  if (method_exists(new $this->controller, 'destroy')) {
-                     Route::delete("{{$binding}}", 'destroy')->name('destroy');
+                     Route::delete("{id}", 'destroy')->name('destroy');
                  }
              });
     }
