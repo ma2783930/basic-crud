@@ -1,11 +1,17 @@
 <?php
 
-namespace BasicCrud\Actions;
+namespace BasicCrud\Http\Actions;
 
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 trait WithBaseTableRules
 {
+    /**
+     * @param $table
+     * @param $id
+     * @return array
+     */
     public function getBaseTableRules($table, $id = null): array
     {
         return [
@@ -15,10 +21,12 @@ trait WithBaseTableRules
                 'min:3',
                 'max:300',
                 Rule::unique($table, 'name')
-                    ->where(
-                        fn($builder) => $builder->whereNull('expired_at')
-                                                ->orWhere('expired_at', '>', now())
-                    )
+                    ->ignore($id)
+                    ->where(function ($builder) {
+                        $builder
+                            ->whereNull('expired_at')
+                            ->orWhere('expired_at', '>', Carbon::now());
+                    })
             ],
             'expired_at' => 'nullable|date'
         ];

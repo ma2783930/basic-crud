@@ -1,11 +1,12 @@
 <?php
 
-namespace BasicCrud\Actions;
+namespace BasicCrud\Http\Actions;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as ValidatorInstance;
 
 /**
  * @property string $model
@@ -25,22 +26,24 @@ trait HasUpdateAction
     public function update(Request $request, $id): array
     {
         /**
+         * @var $model \Illuminate\Database\Eloquent\Builder
          * @var $modelObject \Illuminate\Database\Eloquent\Model
          */
         $model       = $this->model;
-        $modelObject = $model::findOrFail($id);
+        $modelObject = method_exists($this, 'findOne') ?
+            call_user_func([$this, 'findOne'], $request, $id) :
+            $model::findOrFail($id);
 
-        validator()
-            ->make(
-                $request->all(),
-                method_exists($this, 'updateRules') ?
-                    $this->updateRules($request, $modelObject) :
-                    $this->getBaseTableRules($modelObject->getTable())
-            )
-            ->after(function (Validator $validator) use ($modelObject) {
-                $this->withUpdateValidator($validator, $modelObject);
-            })
-            ->validate();
+        Validator::make(
+            $request->all(),
+            method_exists($this, 'updateRules') ?
+                call_user_func([$this, 'updateRules'], $request, $modelObject) :
+                $this->getBaseTableRules((new $this->model)->getTable(), $modelObject->id)
+        )
+                 ->after(function (ValidatorInstance $validator) use ($request, $modelObject) {
+                     $this->withUpdateValidator($validator, $request, $modelObject);
+                 })
+                 ->validate();
 
         DB::transaction(function () use ($request, $modelObject) {
             $modelObject->fill($request->all());
@@ -49,7 +52,7 @@ trait HasUpdateAction
             $this->afterUpdate($request, $modelObject);
         });
 
-        return $this->withUpdateResponse();
+        return $this->withUpdateResponse($modelObject);
     }
 
     /**
@@ -71,18 +74,21 @@ trait HasUpdateAction
     }
 
     /**
-     * @param \Illuminate\Validation\Validator    $validator
+     * @param ValidatorInstance                   $validator
+     * @param \Illuminate\Http\Request            $request
      * @param \Illuminate\Database\Eloquent\Model $modelObject
      * @return void
      */
-    protected function withUpdateValidator(Validator $validator, Model $modelObject): void
+    protected function withUpdateValidator(ValidatorInstance $validator, Request $request, Model $modelObject): void
     {
     }
 
     /**
+     * @param \Illuminate\Database\Eloquent\Model $model
      * @return array
+     * @noinspection PhpUndefinedFunctionInspection
      */
-    protected function withUpdateResponse(): array
+    protected function withUpdateResponse(Model $model): array
     {
         return [
             'message' => trans(property_exists($this, 'updateMessageKey') ?

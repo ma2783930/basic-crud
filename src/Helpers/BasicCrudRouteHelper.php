@@ -10,6 +10,7 @@ class BasicCrudRouteHelper
     private string $model;
     private string $prefix;
     private string $controller;
+    private string $binding;
 
     public function prefix($prefix): self
     {
@@ -29,17 +30,23 @@ class BasicCrudRouteHelper
         return $this;
     }
 
+    public function binding($binding): self
+    {
+        $this->binding = $binding;
+        return $this;
+    }
+
     public function register()
     {
-        $camelCaseModelName = Str::camel(class_basename($this->model));
+        $binding = $this->binding ?? Str::camel(class_basename($this->model));
         Route::prefix($this->prefix)
              ->name("{$this->prefix}.")
              ->controller($this->controller)
-             ->group(function () use ($camelCaseModelName) {
+             ->group(function () use ($binding) {
                  Route::post('index', 'index')->name('index');
                  Route::post('/', 'store')->name('store');
-                 Route::put("{{$camelCaseModelName}}", 'update')->name('update');
-                 Route::delete("{{$camelCaseModelName}}", 'destroy')->name('destroy');
+                 Route::put("{{$binding}}", 'update')->name('update');
+                 Route::delete("{{$binding}}", 'destroy')->name('destroy');
              });
     }
 }

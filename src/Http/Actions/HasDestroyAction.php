@@ -1,6 +1,6 @@
 <?php
 
-namespace BasicCrud\Actions;
+namespace BasicCrud\Http\Actions;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -20,18 +20,21 @@ trait HasDestroyAction
     public function destroy(Request $request, $id): array
     {
         /**
+         * @var $model       \Illuminate\Database\Eloquent\Builder
          * @var $modelObject \Illuminate\Database\Eloquent\Model
          */
         $model       = $this->model;
-        $modelObject = $model::findOrFail($id);
+        $modelObject = method_exists($this, 'findOne') ?
+            call_user_func([$this, 'findOne'], $request, $id) :
+            $model::findOrFail($id);
 
-        DB::transaction(function() use ($request, $modelObject) {
+        DB::transaction(function () use ($request, $modelObject) {
             $this->beforeDelete($request, $modelObject);
             $modelObject->delete();
             $this->afterDelete($request, $modelObject);
         });
 
-        return $this->withDestroyResponse();
+        return $this->withDestroyResponse($modelObject);
     }
 
     /**
@@ -39,19 +42,25 @@ trait HasDestroyAction
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return void
      */
-    public function beforeDelete(Request $request, Model $model): void{}
+    public function beforeDelete(Request $request, Model $model): void
+    {
+    }
 
     /**
      * @param \Illuminate\Http\Request            $request
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return void
      */
-    public function afterDelete(Request $request, Model $model): void{}
+    public function afterDelete(Request $request, Model $model): void
+    {
+    }
 
     /**
+     * @param \Illuminate\Database\Eloquent\Model $model
      * @return array
+     * @noinspection PhpUndefinedFunctionInspection
      */
-    protected function withDestroyResponse(): array
+    protected function withDestroyResponse(Model $model): array
     {
         return [
             'message' => trans($this->deleteMessageKey ?? 'basic-crud::messages.deleteSuccess')
