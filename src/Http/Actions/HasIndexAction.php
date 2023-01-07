@@ -43,20 +43,16 @@ trait HasIndexAction
                 $sortField ?? (property_exists($this, 'sort_field') ? $this->sort_field : ""),
                 $sortOrder ?? (property_exists($this, 'sort_order') ? $this->sort_order : "")
             );
-            $paginatedData = $query->paginate(
-                $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
-                "*",
-                "page",
-                $page ?? 1
-            );
         } else {
-            $paginatedData = $model::paginate(
-                $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
-                "*",
-                "page",
-                $page ?? 1
-            );
+            $query = $model;
         }
+
+        $paginatedData = $query->paginate(
+            $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
+            "*",
+            "page",
+            $page ?? 1
+        );
 
         return $resource::collection($paginatedData);
     }
