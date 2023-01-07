@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * @property string $model
  * @property string $deleteMessageKey
+ * @method Model findOne(Request $request, $id)
  */
 trait HasDestroyAction
 {

@@ -12,6 +12,7 @@ use Illuminate\Validation\Validator as ValidatorInstance;
  * @property string $model
  * @property string $updateMessageKey
  * @method updateRules(Request $request, Model $model)
+ * @method Model findOne(Request $request, $id)
  */
 trait HasUpdateAction
 {
