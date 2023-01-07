@@ -12,30 +12,49 @@ class BasicCrudRouteHelper
     private string $controller;
     private string $binding;
 
+    /**
+     * @param $prefix
+     * @return $this
+     */
     public function prefix($prefix): self
     {
         $this->prefix = $prefix;
         return $this;
     }
 
+    /**
+     * @param $model
+     * @return $this
+     */
     public function model($model): self
     {
         $this->model = $model;
         return $this;
     }
 
+    /**
+     * @param $controller
+     * @return $this
+     */
     public function controller($controller): self
     {
         $this->controller = $controller;
         return $this;
     }
 
+    /**
+     * @param $binding
+     * @return $this
+     */
     public function binding($binding): self
     {
         $this->binding = $binding;
         return $this;
     }
 
+    /**
+     * @return void
+     */
     public function register()
     {
         $binding = $this->binding ?? Str::camel(class_basename($this->model));

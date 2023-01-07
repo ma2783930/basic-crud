@@ -16,6 +16,9 @@ trait HasListAction
 {
     private array $defaultColumns = ['id', 'name'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
     public function list()
     {
         /** @var $model Builder */
