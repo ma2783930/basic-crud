@@ -45,6 +45,7 @@ class BasicCrudRouteHelper
              ->group(function () use ($binding) {
                  Route::post('index', 'index')->name('index');
                  Route::post('/', 'store')->name('store');
+                 Route::get('/', 'list')->name('list');
                  Route::put("{{$binding}}", 'update')->name('update');
                  Route::delete("{{$binding}}", 'destroy')->name('destroy');
              });
