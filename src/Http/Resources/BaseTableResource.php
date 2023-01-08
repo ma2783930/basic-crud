@@ -22,15 +22,18 @@ class BaseTableResource extends JsonResource
      */
     public function toArray($request): array
     {
+        $extraFields = [];
+        if (method_exists($this->resource, 'getReadonlyColumn')) {
+            $extraFields[$this->resource->getReadonlyColumn()] = $this->resource->getAttribute($this->resource->getReadonlyColumn());
+        }
+
         return [
             'id'         => $this->id,
             'name'       => $this->name,
             'expired_at' => $this->expired_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            $this->mergeWhen(method_exists($this->resource, 'getReadonlyColumn'), [
-                $this->resource->getReadonlyColumn() => $this->resource->getAttribute($this->resource->getReadonlyColumn())
-            ])
+            ...$extraFields
         ];
     }
 }
