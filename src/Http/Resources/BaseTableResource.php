@@ -29,7 +29,7 @@ class BaseTableResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             $this->mergeWhen(method_exists($this->resource, 'getReadonlyColumn'), [
-                $this->resource->getReadonlyColumn() => $this->resource->attributes[$this->resource->getReadonlyColumn()]
+                $this->resource->getReadonlyColumn() => $this->resource->getAttribute($this->resource->getReadonlyColumn())
             ])
         ];
     }
