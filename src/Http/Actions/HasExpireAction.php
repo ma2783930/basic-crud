@@ -35,7 +35,7 @@ trait HasExpireAction
             abort_if(
                 $modelObject->getAttribute($modelObject->getReadonlyColumn()),
                 403,
-                trans('basic-crud::protected-record')
+                trans('basic-crud::messages.protected-record')
             );
         }
 
