@@ -18,6 +18,7 @@ trait HasExpireAction
      * @param \Illuminate\Http\Request $request
      * @param                          $id
      * @return array
+     * @noinspection PhpUndefinedFunctionInspection
      */
     public function expire(Request $request, $id): array
     {
@@ -29,6 +30,14 @@ trait HasExpireAction
         $modelObject = method_exists($this, 'findOne') ?
             call_user_func([$this, 'findOne'], $request, $id) :
             $model::findOrFail($id);
+
+        if (method_exists($modelObject, 'getReadonlyColumn')) {
+            abort_if(
+                $modelObject->getAttribute($modelObject->getReadonlyColumn()),
+                403,
+                trans('basic-crud::protected-record')
+            );
+        }
 
         DB::transaction(function () use ($request, $modelObject) {
             $this->beforeExpire($request, $modelObject);

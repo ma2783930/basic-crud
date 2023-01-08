@@ -5,8 +5,9 @@ namespace BasicCrud\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property integer $id
- * @property string $name
+ * @property integer        $id
+ * @property string         $name
+ * @property boolean        $is_readonly
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $expired_at
@@ -27,6 +28,9 @@ class BaseTableResource extends JsonResource
             'expired_at' => $this->expired_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            $this->mergeWhen(method_exists($this->resource, 'getReadonlyColumn'), [
+                $this->resource->getReadonlyColumn() => $this->resource->attributes[$this->resource->getReadonlyColumn()]
+            ])
         ];
     }
 }
