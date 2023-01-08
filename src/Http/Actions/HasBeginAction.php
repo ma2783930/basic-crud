@@ -2,6 +2,7 @@
 
 namespace BasicCrud\Http\Actions;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,14 +12,14 @@ use Illuminate\Support\Facades\DB;
  * @property string $deleteMessageKey
  * @method Model findOne(Request $request, $id)
  */
-trait HasDestroyAction
+trait HasBeginAction
 {
     /**
      * @param \Illuminate\Http\Request $request
      * @param                          $id
      * @return array
      */
-    public function destroy(Request $request, $id): array
+    public function begin(Request $request, $id): array
     {
         /**
          * @var $model       \Illuminate\Database\Eloquent\Builder
@@ -30,12 +31,15 @@ trait HasDestroyAction
             $model::findOrFail($id);
 
         DB::transaction(function () use ($request, $modelObject) {
-            $this->beforeDelete($request, $modelObject);
-            $modelObject->delete();
-            $this->afterDelete($request, $modelObject);
+            $this->beforeBegin($request, $modelObject);
+            $modelObject->forceFill([
+                $modelObject->getBegindAtColumn() => null
+            ]);
+            $modelObject->save();
+            $this->afterBegin($request, $modelObject);
         });
 
-        return $this->withDestroyResponse($modelObject);
+        return $this->withBeginResponse($modelObject);
     }
 
     /**
@@ -43,7 +47,7 @@ trait HasDestroyAction
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return void
      */
-    public function beforeDelete(Request $request, Model $model): void
+    public function beforeBegin(Request $request, Model $model): void
     {
     }
 
@@ -52,7 +56,7 @@ trait HasDestroyAction
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return void
      */
-    public function afterDelete(Request $request, Model $model): void
+    public function afterBegin(Request $request, Model $model): void
     {
     }
 
@@ -61,10 +65,10 @@ trait HasDestroyAction
      * @return array
      * @noinspection PhpUndefinedFunctionInspection
      */
-    protected function withDestroyResponse(Model $model): array
+    protected function withBeginResponse(Model $model): array
     {
         return [
-            'message' => trans($this->deleteMessageKey ?? 'basic-crud::messages.delete-success')
+            'message' => trans($this->deleteMessageKey ?? 'basic-crud::messages.expire-success')
         ];
     }
 }

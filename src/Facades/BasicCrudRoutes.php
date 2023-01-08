@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static self prefix($prefix)
- * @method static self model($model)
  * @method static self controller($controller)
- * @method static self binding($binding)
- * @method static void register()
+ * @method static void register(callable $callback = null)
  */
 class BasicCrudRoutes extends Facade
 {

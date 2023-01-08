@@ -94,7 +94,7 @@ trait HasStoreAction
     protected function withStoreResponse(Model $model): array
     {
         return [
-            'message' => trans($this->storeMessageKey ?? 'basic-crud::messages.storeSuccess')
+            'message' => trans($this->storeMessageKey ?? 'basic-crud::messages.store-success')
         ];
     }
 }

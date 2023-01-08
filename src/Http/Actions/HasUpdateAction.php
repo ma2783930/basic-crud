@@ -94,7 +94,7 @@ trait HasUpdateAction
         return [
             'message' => trans(property_exists($this, 'updateMessageKey') ?
                 $this->updateMessageKey :
-                'basic-crud::messages.updateSuccess')
+                'basic-crud::messages.update-success')
         ];
     }
 }

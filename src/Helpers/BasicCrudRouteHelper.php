@@ -3,14 +3,11 @@
 namespace BasicCrud\Helpers;
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 class BasicCrudRouteHelper
 {
-    private string $model;
     private string $prefix;
     private string $controller;
-    private string $binding;
 
     /**
      * @param $prefix
@@ -19,16 +16,6 @@ class BasicCrudRouteHelper
     public function prefix($prefix): self
     {
         $this->prefix = $prefix;
-        return $this;
-    }
-
-    /**
-     * @param $model
-     * @return $this
-     */
-    public function model($model): self
-    {
-        $this->model = $model;
         return $this;
     }
 
@@ -43,25 +30,15 @@ class BasicCrudRouteHelper
     }
 
     /**
-     * @param $binding
-     * @return $this
-     */
-    public function binding($binding): self
-    {
-        $this->binding = $binding;
-        return $this;
-    }
-
-    /**
+     * @param callable|null $callback
      * @return void
      */
-    public function register()
+    public function register(callable $callback = null): void
     {
-        $binding = $this->binding ?? Str::camel(class_basename($this->model));
         Route::prefix($this->prefix)
              ->name("{$this->prefix}.")
              ->controller($this->controller)
-             ->group(function () use ($binding) {
+             ->group(function () use ($callback) {
                  if (method_exists(new $this->controller, 'index')) {
                      Route::post('index', 'index')->name('index');
                  }
@@ -74,8 +51,18 @@ class BasicCrudRouteHelper
                  if (method_exists(new $this->controller, 'update')) {
                      Route::put("{id}", 'update')->name('update');
                  }
+                 if (method_exists(new $this->controller, 'expire')) {
+                     Route::put("{id}/expire", 'expire')->name('expire');
+                 }
+                 if (method_exists(new $this->controller, 'begin')) {
+                     Route::put("{id}/begin", 'begin')->name('begin');
+                 }
                  if (method_exists(new $this->controller, 'destroy')) {
                      Route::delete("{id}", 'destroy')->name('destroy');
+                 }
+
+                 if (is_callable($callback)) {
+                     call_user_func($callback);
                  }
              });
     }
