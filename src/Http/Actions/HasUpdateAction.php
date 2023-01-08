@@ -39,7 +39,7 @@ trait HasUpdateAction
             $request->all(),
             method_exists($this, 'updateRules') ?
                 call_user_func([$this, 'updateRules'], $request, $modelObject) :
-                $this->getBaseTableRules((new $this->model)->getTable(), $modelObject->id)
+                $this->getRules((new $this->model)->getTable(), $modelObject->id)
         )
                  ->after(function (ValidatorInstance $validator) use ($request, $modelObject) {
                      $this->withUpdateValidator($validator, $request, $modelObject);

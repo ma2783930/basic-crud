@@ -28,7 +28,7 @@ trait HasStoreAction
             $request->all(),
             method_exists($this, 'storeRules') ?
                 call_user_func([$this, 'storeRules'], $request) :
-                $this->getBaseTableRules((new $this->model)->getTable())
+                $this->getRules((new $this->model)->getTable())
         )
                  ->after(function (ValidatorInstance $validator) use ($request) {
                      $this->withStoreValidator($validator, $request);

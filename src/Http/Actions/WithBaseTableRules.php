@@ -12,7 +12,7 @@ trait WithBaseTableRules
      * @param $id
      * @return array
      */
-    public function getBaseTableRules($table, $id = null): array
+    public function getRules($table, $id = null): array
     {
         return [
             'name'       => [
