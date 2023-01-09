@@ -26,6 +26,9 @@ class BaseTableResource extends JsonResource
         if (method_exists($this->resource, 'getReadonlyColumn')) {
             $extraFields[$this->resource->getReadonlyColumn()] = $this->resource->getAttribute($this->resource->getReadonlyColumn());
         }
+        if (method_exists($this->resource, 'getExpiredAtColumn')) {
+            $extraFields['is_expired'] = $this->resource->expired();
+        }
 
         return [
             'id'         => $this->id,
