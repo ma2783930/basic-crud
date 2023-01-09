@@ -23,7 +23,7 @@ trait WithBaseTableRules
             'name' => [
                 'required',
                 'string',
-                'min:3',
+                'min:2',
                 'max:300',
                 Rule::unique($model->getTable(), 'name')
                     ->when($model->exists, function ($rule) use ($model) {
