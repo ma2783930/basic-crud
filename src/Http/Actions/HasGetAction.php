@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
  * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $singleResource
+ * @property string $resource
  * @method Model getOne(Request $request, $id)
  */
 trait HasGetAction
@@ -25,7 +26,7 @@ trait HasGetAction
             call_user_func([$this, 'getOne'], $request, $id) :
             $model::findOrFail($id);
 
-        $resource = $this->singleResource ?? BaseTableResource::class;
+        $resource = $this->singleResource ?? $this->resource ?? BaseTableResource::class;
 
         return new $resource($modelObject);
     }
