@@ -5,6 +5,8 @@ namespace BasicCrud\Http\Actions;
 use BasicCrud\Http\Resources\BaseTableResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin \Illuminate\Routing\Controller
@@ -15,7 +17,12 @@ use Illuminate\Http\Request;
  */
 trait HasGetAction
 {
-    public function get(Request $request, $id): array
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param $id
+     * @return array|\Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function get(Request $request, $id): array|JsonResource
     {
         /**
          * @var $model \Illuminate\Database\Eloquent\Builder
