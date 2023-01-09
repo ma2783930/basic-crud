@@ -9,63 +9,59 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorInstance;
 
 /**
+ * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $storeMessageKey
- * @method storeRules(Request $request)
  */
 trait HasStoreAction
 {
     use WithBaseTableRules;
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return array
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function store(Request $request): array
     {
-        Validator::make(
-            $request->all(),
-            method_exists($this, 'storeRules') ?
-                call_user_func([$this, 'storeRules'], $request) :
-                $this->getRules((new $this->model)->getTable())
-        )
+        /** @var $modelObject Model */
+        $model       = $this->model;
+        $modelObject = new $model();
+
+        Validator::make($request->all(), $this->getRules($request, $modelObject))
                  ->after(function (ValidatorInstance $validator) use ($request) {
                      $this->withStoreValidator($validator, $request);
                  })
                  ->validate();
 
-        /** @var $modelObject \Illuminate\Database\Eloquent\Model */
-        $model       = $this->model;
-        $modelObject = new $model();
-
-        DB::transaction(function () use ($modelObject, $request) {
+        DB::transaction(function () use ($request, &$modelObject) {
             $modelObject->fill($request->all());
 
-            $this->beforeStore($request, $modelObject);
+            $modelObject = $this->beforeStore($request, $modelObject);
             $modelObject->save();
-            $this->afterStore($request, $modelObject);
+            $modelObject = $this->afterStore($request, $modelObject);
         });
 
         return $this->withStoreResponse($modelObject);
     }
 
     /**
-     * @param \Illuminate\Http\Request            $request
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return void
+     * @param Request $request
+     * @param Model   $model
+     * @return Model
      */
-    public function beforeStore(Request $request, Model $model): void
+    public function beforeStore(Request $request, Model $model): Model
     {
+        return $model;
     }
 
     /**
-     * @param \Illuminate\Http\Request            $request
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return void
+     * @param Request $request
+     * @param Model   $model
+     * @return Model
      */
-    public function afterStore(Request $request, Model $model): void
+    public function afterStore(Request $request, Model $model): Model
     {
+        return $model;
     }
 
     /**
@@ -77,8 +73,8 @@ trait HasStoreAction
     }
 
     /**
-     * @param ValidatorInstance        $validator
-     * @param \Illuminate\Http\Request $request
+     * @param ValidatorInstance $validator
+     * @param Request           $request
      * @return void
      */
     protected function withStoreValidator(ValidatorInstance $validator, Request $request): void
@@ -87,7 +83,7 @@ trait HasStoreAction
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Model $model
      * @return array
      * @noinspection PhpUndefinedFunctionInspection
      */

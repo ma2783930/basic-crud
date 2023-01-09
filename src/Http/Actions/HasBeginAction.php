@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $deleteMessageKey
  * @method Model findOne(Request $request, $id)

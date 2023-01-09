@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
+ * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $resource
  * @property integer $pageSize

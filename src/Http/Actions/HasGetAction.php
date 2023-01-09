@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 /**
+ * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $singleResource
  * @method Model getOne(Request $request, $id)

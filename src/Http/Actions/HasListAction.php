@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $resource
  * @property array $listColumns
