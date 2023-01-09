@@ -27,7 +27,7 @@ trait WithBaseTableRules
                 'max:300',
                 Rule::unique($model->getTable(), 'name')
                     ->when($model->exists, function ($rule) use ($model) {
-                        $rule->ignore($model->getKeyName());
+                        $rule->ignore($model->getKey());
                     })
                     ->where(function ($builder) use ($model) {
                         if (method_exists($model, 'getExpiredAtColumn')) {
