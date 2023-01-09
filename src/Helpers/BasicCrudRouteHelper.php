@@ -42,6 +42,9 @@ class BasicCrudRouteHelper
                  if (method_exists(new $this->controller, 'index')) {
                      Route::post('index', 'index')->name('index');
                  }
+                 if (method_exists(new $this->controller, 'get')) {
+                     Route::get("{id}", 'get')->name('get');
+                 }
                  if (method_exists(new $this->controller, 'store')) {
                      Route::post('/', 'store')->name('store');
                  }
