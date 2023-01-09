@@ -14,21 +14,29 @@ trait WithBaseTableRules
      */
     public function getRules($table, $id = null): array
     {
-        return [
-            'name'       => [
+        $model = new $this->model;
+        $rules = [
+            'name' => [
                 'required',
                 'string',
                 'min:3',
                 'max:300',
                 Rule::unique($table, 'name')
                     ->ignore($id)
-                    ->where(function ($builder) {
-                        $builder
-                            ->whereNull('expired_at')
-                            ->orWhere('expired_at', '>', Carbon::now());
+                    ->where(function ($builder) use ($model) {
+                        if (method_exists($model, 'getExpiredAtColumn')) {
+                            $builder
+                                ->whereNull($model->getExpiredAtColumn())
+                                ->orWhere($model->getExpiredAtColumn(), '>', Carbon::now());
+                        }
                     })
-            ],
-            'expired_at' => 'nullable|date'
+            ]
         ];
+
+        if (method_exists($model, 'getExpiredAtColumn')) {
+            $rules['expired_at'] = 'nullable|date';
+        }
+
+        return $rules;
     }
 }

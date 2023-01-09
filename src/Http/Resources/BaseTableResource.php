@@ -7,10 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property integer        $id
  * @property string         $name
- * @property boolean        $is_readonly
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $expired_at
  */
 class BaseTableResource extends JsonResource
 {
