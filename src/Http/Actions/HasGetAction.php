@@ -5,7 +5,6 @@ namespace BasicCrud\Http\Actions;
 use BasicCrud\Http\Resources\BaseTableResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
