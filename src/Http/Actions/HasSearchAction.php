@@ -3,14 +3,13 @@
 namespace BasicCrud\Http\Actions;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 /**
  * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $searchResource
- * @method Collection searchQuery(Request $request, string $keyword)
- * @method array searchMapper(Collection|\Illuminate\Database\Eloquent\Collection $results)
+ * @method \Illuminate\Support\Collection searchQuery(Request $request, string $keyword)
+ * @method array searchMapper(\Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Collection $results)
  */
 trait HasSearchAction
 {
@@ -19,7 +18,7 @@ trait HasSearchAction
      * @param                          $keyword
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\Support\Collection|array
      */
-    public function search(Request $request, $keyword): \Illuminate\Http\Resources\Json\AnonymousResourceCollection|Collection|array
+    public function search(Request $request, $keyword): \Illuminate\Http\Resources\Json\AnonymousResourceCollection|\Illuminate\Support\Collection|array
     {
         /**
          * @var $model       \Illuminate\Database\Eloquent\Builder
