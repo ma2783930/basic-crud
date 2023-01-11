@@ -9,8 +9,8 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * @mixin \Illuminate\Routing\Controller
- * @property string $model
- * @property string $resource
+ * @property string  $model
+ * @property string  $resource
  * @property integer $pageSize
  * @method Builder getIndexQuery($quickFilter, $sortField, $sortOrder)
  */
@@ -19,26 +19,28 @@ trait HasIndexAction
     /**
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @noinspection PhpUndefinedMethodInspection
      */
     public function index(Request $request): AnonymousResourceCollection
     {
         [
-            'page'    => $page,
-            'per_page' => $perPage,
+            'page'         => $page,
+            'per_page'     => $perPage,
             'sort_field'   => $sortField,
             'sort_order'   => $sortOrder,
             'quick_filter' => $quickFilter,
         ] = $request->all();
 
         /**
-         * @var \Illuminate\Http\Resources\Json\JsonResource $resource
-         * @var \Illuminate\Contracts\Database\Eloquent\Builder $model
+         * @var $resource \Illuminate\Http\Resources\Json\JsonResource
+         * @var $model    Builder
          */
-        $resource = $this->resource ?? BaseTableResource::class;
-        $model = $this->model;
+        $resource    = $this->resource ?? BaseTableResource::class;
+        $model       = $this->model;
+        $modelObject = new $this->model;
         if (method_exists($this, 'getIndexQuery')) {
             /** @var $query \Illuminate\Contracts\Database\Eloquent\Builder */
-            $query = call_user_func(
+            $query         = call_user_func(
                 [$this, 'getIndexQuery'],
                 $quickFilter,
                 $sortField ?? (property_exists($this, 'sort_field') ? $this->sort_field : ""),
@@ -51,12 +53,16 @@ trait HasIndexAction
                 $page ?? 1
             );
         } else {
-            $paginatedData = $model::paginate(
-                $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
-                "*",
-                "page",
-                $page ?? 1
-            );
+            $paginatedData = $model::when(method_exists($modelObject, 'withExpired'), fn(Builder $builder) => $builder->withExpired())
+                                   ->when(method_exists($modelObject, 'getReadonlyColumn'), fn(Builder $builder) => $builder->orderBy($modelObject->getReadonlyColumn()))
+                                   ->when(method_exists($modelObject, 'applySort'), fn(Builder $builder) => $builder->applySort($sortField, $sortOrder))
+                                   ->when(method_exists($modelObject, 'applyQuickFilter'), fn(Builder $builder) => $builder->applyQuickFilter($quickFilter))
+                                   ->paginate(
+                                       $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
+                                       "*",
+                                       "page",
+                                       $page ?? 1
+                                   );
         }
 
         return $resource::collection($paginatedData);
