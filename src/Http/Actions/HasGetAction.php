@@ -13,6 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $model
  * @property string $singleResource
  * @property string $resource
+ * @property array $getActionRelationships
  * @method Model getOne(Request $request, $id)
  */
 trait HasGetAction
@@ -32,7 +33,8 @@ trait HasGetAction
         $model       = $this->model;
         $modelObject = method_exists($this, 'getOne') ?
             call_user_func([$this, 'getOne'], $request, $id) :
-            $model::when(method_exists($modelObject, 'getExpiredAtColumn'), fn(Builder $builder) => $builder->withExpired())
+            $model::with(property_exists($this, 'getActionRelationships') ? $this->getActionRelationships : [])
+                  ->when(method_exists($modelObject, 'getExpiredAtColumn'), fn(Builder $builder) => $builder->withExpired())
                   ->findOrFail($id);
 
         $resource = $this->singleResource ?? $this->resource ?? BaseTableResource::class;
