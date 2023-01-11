@@ -20,7 +20,7 @@ trait HasListAction
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
      */
-    public function list()
+    public function list(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection|array
     {
         /** @var $model Builder */
         $model   = $this->model;
