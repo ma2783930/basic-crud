@@ -53,10 +53,10 @@ trait HasIndexAction
                 $page ?? 1
             );
         } else {
-            $paginatedData = $model::when(method_exists($modelObject, 'withExpired'), fn(Builder $builder) => $builder->withExpired())
+            $paginatedData = $model::when(method_exists($modelObject, 'getExpiredAtColumn'), fn(Builder $builder) => $builder->withExpired())
                                    ->when(method_exists($modelObject, 'getReadonlyColumn'), fn(Builder $builder) => $builder->orderBy($modelObject->getReadonlyColumn()))
-                                   ->when(method_exists($modelObject, 'applySort'), fn(Builder $builder) => $builder->applySort($sortField, $sortOrder))
-                                   ->when(method_exists($modelObject, 'applyQuickFilter'), fn(Builder $builder) => $builder->applyQuickFilter($quickFilter))
+                                   ->when(method_exists($modelObject, 'scopeApplySort'), fn(Builder $builder) => $builder->applySort($sortField, $sortOrder))
+                                   ->when(method_exists($modelObject, 'scopeApplyQuickFilter'), fn(Builder $builder) => $builder->applyQuickFilter($quickFilter))
                                    ->paginate(
                                        $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
                                        "*",
