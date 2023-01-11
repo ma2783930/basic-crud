@@ -38,7 +38,6 @@ trait HasIndexAction
          */
         $resource    = $this->resource ?? BaseTableResource::class;
         $model       = $this->model;
-        $modelObject = new $this->model;
         if (method_exists($this, 'getIndexQuery')) {
             /** @var $query \Illuminate\Contracts\Database\Eloquent\Builder */
             $query         = call_user_func(
@@ -55,10 +54,22 @@ trait HasIndexAction
             );
         } else {
             $paginatedData = $model::with(property_exists($this, 'indexActionRelationships') ? $this->indexActionRelationships : [])
-                                   ->when(method_exists($modelObject, 'getExpiredAtColumn'), fn(Builder $builder) => $builder->withExpired())
-                                   ->when(method_exists($modelObject, 'getReadonlyColumn'), fn(Builder $builder) => $builder->orderBy($modelObject->getReadonlyColumn()))
-                                   ->when(method_exists($modelObject, 'scopeApplySort'), fn(Builder $builder) => $builder->applySort($sortField, $sortOrder))
-                                   ->when(method_exists($modelObject, 'scopeApplyQuickFilter'), fn(Builder $builder) => $builder->applyQuickFilter($quickFilter))
+                                   ->when(
+                                       fn(Builder $builder) => method_exists($builder->getModel(), 'getExpiredAtColumn'),
+                                       fn(Builder $builder) => $builder->withExpired()
+                                   )
+                                   ->when(
+                                       fn(Builder $builder) => method_exists($builder->getModel(), 'getReadonlyColumn'),
+                                       fn(Builder $builder) => $builder->orderBy($builder->getModel()->getReadonlyColumn())
+                                   )
+                                   ->when(
+                                       fn(Builder $builder) => method_exists($builder->getModel(), 'scopeApplySort'),
+                                       fn(Builder $builder) => $builder->applySort($sortField, $sortOrder)
+                                   )
+                                   ->when(
+                                       fn(Builder $builder) => method_exists($builder->getModel(), 'scopeApplyQuickFilter'),
+                                       fn(Builder $builder) => $builder->applyQuickFilter($quickFilter)
+                                   )
                                    ->paginate(
                                        $perPage ?? (property_exists($this, 'per_page') ? $this->pageSize : 10),
                                        "*",
