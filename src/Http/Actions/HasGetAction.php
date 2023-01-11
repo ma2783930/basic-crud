@@ -3,6 +3,7 @@
 namespace BasicCrud\Http\Actions;
 
 use BasicCrud\Http\Resources\BaseTableResource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,19 +19,21 @@ trait HasGetAction
 {
     /**
      * @param \Illuminate\Http\Request $request
-     * @param $id
+     * @param                          $id
      * @return array|\Illuminate\Http\Resources\Json\JsonResource
+     * @noinspection PhpUndefinedMethodInspection
      */
     public function get(Request $request, $id): array|JsonResource
     {
         /**
-         * @var $model \Illuminate\Database\Eloquent\Builder
-         * @var $modelObject \Illuminate\Database\Eloquent\Model
+         * @var \Illuminate\Database\Eloquent\Builder $model
+         * @var \Illuminate\Database\Eloquent\Model $modelObject
          */
         $model       = $this->model;
         $modelObject = method_exists($this, 'getOne') ?
             call_user_func([$this, 'getOne'], $request, $id) :
-            $model::findOrFail($id);
+            $model::when(method_exists($modelObject, 'getExpiredAtColumn'), fn(Builder $builder) => $builder->withExpired())
+                  ->findOrFail($id);
 
         $resource = $this->singleResource ?? $this->resource ?? BaseTableResource::class;
 
