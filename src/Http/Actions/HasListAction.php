@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $resource
- * @property array $listColumns
+ * @property array $listSelectColumns
  * @method Builder listDataQuery(Builder $builder)
  * @method array|string|int listDataMapper(Model $model, int $index)
  */
@@ -24,7 +24,7 @@ trait HasListAction
     {
         /** @var $model Builder */
         $model   = $this->model;
-        $columns = property_exists($this, 'listColumns') ? $this->listColumns : $this->defaultColumns;
+        $columns = property_exists($this, 'listSelectColumns') ? $this->listSelectColumns : $this->defaultColumns;
 
         $listData = $model::select($columns);
 
