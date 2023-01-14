@@ -4,13 +4,14 @@ namespace BasicCrud\Http\Actions;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * @mixin \Illuminate\Routing\Controller
  * @property string $model
  * @property string $resource
- * @property array $listSelectColumns
- * @method Builder listDataQuery(Builder $builder)
+ * @property array  $listSelectColumns
+ * @method Collection listDataQuery()
  * @method array|string|int listDataMapper(Model $model, int $index)
  */
 trait HasListAction
@@ -18,22 +19,19 @@ trait HasListAction
     private array $defaultColumns = ['id', 'name'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder[]|Collection
      */
-    public function list(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection|array
+    public function list(): Collection|array
     {
         /** @var $model Builder */
-        $model   = $this->model;
-        $columns = property_exists($this, 'listSelectColumns') ? $this->listSelectColumns : $this->defaultColumns;
-
-        $listData = $model::select($columns);
+        $model = $this->model;
 
         if (method_exists($this, 'listDataQuery')) {
             /** @var $query Builder */
-            $query    = call_user_func([$this, 'listDataQuery'], $listData);
-            $listData = $query->get();
+            return call_user_func([$this, 'listDataQuery']);
         } else {
-            $listData = $listData->get();
+            $columns  = property_exists($this, 'listSelectColumns') ? $this->listSelectColumns : $this->defaultColumns;
+            $listData = $model::select($columns)->get();
         }
 
         if (method_exists($this, 'listDataMapper')) {
