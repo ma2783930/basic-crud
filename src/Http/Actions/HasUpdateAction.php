@@ -34,7 +34,11 @@ trait HasUpdateAction
         $model       = $this->model;
         $modelObject = method_exists($this, 'findOne') ?
             call_user_func([$this, 'findOne'], $request, $id) :
-            $model::findOrFail($id);
+            (
+            method_exists($model, 'getExpiredAtColumn') ?
+                $model::withExpired()->findOrFail($id) :
+                $model::findorFail($id)
+            );
 
         if (method_exists($modelObject, 'getReadonlyColumn')) {
             abort_if(
