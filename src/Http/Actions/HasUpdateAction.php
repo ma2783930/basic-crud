@@ -37,7 +37,7 @@ trait HasUpdateAction
             (
             method_exists($model, 'getExpiredAtColumn') ?
                 $model::withExpired()->findOrFail($id) :
-                $model::findorFail($id)
+                $model::findOrFail($id)
             );
 
         if (method_exists($modelObject, 'getReadonlyColumn')) {
