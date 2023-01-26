@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 trait HasListAction
 {
     private array $defaultColumns = ['id', 'name'];
+    public string $listSortColumn = '';
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|Collection
@@ -31,7 +32,9 @@ trait HasListAction
             return call_user_func([$this, 'listDataQuery']);
         } else {
             $columns  = property_exists($this, 'listSelectColumns') ? $this->listSelectColumns : $this->defaultColumns;
-            $listData = $model::select($columns)->get();
+            $listData = $model::select($columns)
+                              ->orderBy('name')
+                              ->get();
         }
 
         if (method_exists($this, 'listDataMapper')) {
