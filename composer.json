@@ -34,11 +34,5 @@
                 "BasicCrudRoutes": "BasicCrud\\Facades\\BasicCrudRoutes"
             }
         }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://ma2783930.repo.repman.io"
-        }
-    ]
+    }
 }
