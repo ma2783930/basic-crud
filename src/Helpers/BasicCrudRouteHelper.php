@@ -40,31 +40,31 @@ class BasicCrudRouteHelper
              ->controller($this->controller)
              ->group(function () use ($callback) {
                  if (method_exists(new $this->controller, 'index')) {
-                     Route::post('index', 'index')->name('index');
+                     Route::post('index', 'index');
                  }
                  if (method_exists(new $this->controller, 'search')) {
-                     Route::get("search/{keyword}", 'search')->name('search');
+                     Route::get("search/{keyword}", 'search');
                  }
                  if (method_exists(new $this->controller, 'get')) {
-                     Route::get("{id}", 'get')->name('get');
+                     Route::get("{id}", 'get');
                  }
                  if (method_exists(new $this->controller, 'store')) {
-                     Route::post('/', 'store')->name('store');
+                     Route::post('/', 'store');
                  }
                  if (method_exists(new $this->controller, 'list')) {
-                     Route::get('/', 'list')->name('list');
+                     Route::get('/', 'listItems');
                  }
                  if (method_exists(new $this->controller, 'update')) {
-                     Route::put("{id}", 'update')->name('update');
+                     Route::put("{id}", 'update');
                  }
                  if (method_exists(new $this->controller, 'expire')) {
-                     Route::put("{id}/expire", 'expire')->name('expire');
+                     Route::put("{id}/expire", 'expire');
                  }
                  if (method_exists(new $this->controller, 'begin')) {
-                     Route::put("{id}/begin", 'begin')->name('begin');
+                     Route::put("{id}/begin", 'begin');
                  }
                  if (method_exists(new $this->controller, 'destroy')) {
-                     Route::delete("{id}", 'destroy')->name('destroy');
+                     Route::delete("{id}", 'destroy');
                  }
 
                  if (is_callable($callback)) {

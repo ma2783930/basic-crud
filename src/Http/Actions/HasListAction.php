@@ -22,7 +22,7 @@ trait HasListAction
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|Collection
      */
-    public function list(): Collection|array
+    public function listItems(): Collection|array
     {
         /** @var $model Builder */
         $model = $this->model;
