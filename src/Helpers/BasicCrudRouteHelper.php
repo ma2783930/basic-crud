@@ -51,7 +51,7 @@ class BasicCrudRouteHelper
                  if (method_exists(new $this->controller, 'store')) {
                      Route::post('/', 'store');
                  }
-                 if (method_exists(new $this->controller, 'list')) {
+                 if (method_exists(new $this->controller, 'listItems')) {
                      Route::get('/', 'listItems');
                  }
                  if (method_exists(new $this->controller, 'update')) {
