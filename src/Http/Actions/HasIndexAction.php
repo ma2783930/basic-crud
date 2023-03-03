@@ -58,10 +58,10 @@ trait HasIndexAction
                                        fn(Builder $builder) => method_exists($builder->getModel(), 'getExpiredAtColumn'),
                                        fn(Builder $builder) => $builder->withExpired()
                                    )
-                                   ->when(
+                                   /*->when(
                                        fn(Builder $builder) => method_exists($builder->getModel(), 'getReadonlyColumn'),
                                        fn(Builder $builder) => $builder->orderBy($builder->getModel()->getReadonlyColumn())
-                                   )
+                                   )*/
                                    ->when(
                                        fn(Builder $builder) => method_exists($builder->getModel(), 'scopeApplySort'),
                                        fn(Builder $builder) => $builder->applySort($sortField, $sortOrder)
