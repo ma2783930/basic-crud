@@ -18,7 +18,6 @@ trait HasDestroyAction
      * @param \Illuminate\Http\Request $request
      * @param                          $id
      * @return array
-     * @noinspection PhpUndefinedFunctionInspection
      */
     public function destroy(Request $request, $id): array
     {
@@ -39,13 +38,21 @@ trait HasDestroyAction
             );
         }
 
-        DB::transaction(function () use ($request, $modelObject) {
+        DB::beginTransaction();
+
+        try {
             $this->beforeDelete($request, $modelObject);
             $modelObject->delete();
             $this->afterDelete($request, $modelObject);
-        });
 
-        return $this->withDestroyResponse($modelObject);
+            DB::commit();
+
+            return $this->withDestroyResponse($modelObject);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+
+            abort(400, trans('basic-crud::messages.delete-not-possible'));
+        }
     }
 
     /**
@@ -69,7 +76,6 @@ trait HasDestroyAction
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return array
-     * @noinspection PhpUndefinedFunctionInspection
      */
     protected function withDestroyResponse(Model $model): array
     {
