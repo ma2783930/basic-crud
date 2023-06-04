@@ -20,7 +20,6 @@ trait HasExpireAction
      * @param \Illuminate\Http\Request $request
      * @param                          $id
      * @return array
-     * @noinspection PhpUndefinedFunctionInspection
      */
     public function expire(Request $request, $id): array
     {
@@ -80,7 +79,6 @@ trait HasExpireAction
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return array
-     * @noinspection PhpUndefinedFunctionInspection
      */
     protected function withExpireResponse(Model $model): array
     {
