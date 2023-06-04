@@ -3,6 +3,7 @@
 namespace BasicCrud\Http\Actions;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,10 +43,16 @@ trait HasExpireAction
 
         DB::transaction(function () use ($request, $modelObject) {
             $this->beforeExpire($request, $modelObject);
-            $modelObject->forceFill([
-                $modelObject->getExpiredAtColumn() => Carbon::now()
-            ]);
-            $modelObject->save();
+
+            try {
+                $modelObject->forceDelete();
+            } catch (Exception) {
+                $modelObject->forceFill([
+                    $modelObject->getExpiredAtColumn() => Carbon::now()
+                ]);
+                $modelObject->save();
+            }
+
             $this->afterExpire($request, $modelObject);
         });
 
