@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * @mixin \Illuminate\Routing\Controller
- * @property string $model
- * @property string $deleteMessageKey
+ * @property string  $model
+ * @property string  $deleteMessageKey
+ * @property boolean $tryDestroyOnExpire
  * @method Model findOne(Request $request, $id)
  */
 trait HasExpireAction
@@ -43,19 +44,32 @@ trait HasExpireAction
         DB::transaction(function () use ($request, $modelObject) {
             $this->beforeExpire($request, $modelObject);
 
-            try {
-                $modelObject->forceDelete();
-            } catch (Exception) {
-                $modelObject->forceFill([
-                    $modelObject->getExpiredAtColumn() => Carbon::now()
-                ]);
-                $modelObject->save();
+            if ($this->tryDestroyOnExpire ?? false) {
+                try {
+                    $modelObject->forceDelete();
+                } catch (Exception) {
+                    $this->expireModel($modelObject);
+                }
+            } else {
+                $this->expireModel($modelObject);
             }
 
             $this->afterExpire($request, $modelObject);
         });
 
         return $this->withExpireResponse($modelObject);
+    }
+
+    /**
+     * @param $modelObject
+     * @return void
+     */
+    private function expireModel($modelObject): void
+    {
+        $modelObject->forceFill([
+            $modelObject->getExpiredAtColumn() => Carbon::now()
+        ]);
+        $modelObject->save();
     }
 
     /**
