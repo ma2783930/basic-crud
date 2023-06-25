@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Illuminate\Routing\Controller
  * @property string  $model
  * @property string  $deleteMessageKey
+ * @property string  $expireMessageKey
  * @property boolean $tryDestroyOnExpire
  * @method Model findOne(Request $request, $id)
  */
@@ -41,12 +42,15 @@ trait HasExpireAction
             );
         }
 
-        DB::transaction(function () use ($request, $modelObject) {
+        $deleted = false;
+
+        DB::transaction(function () use ($request, $modelObject, &$deleted) {
             $this->beforeExpire($request, $modelObject);
 
             if ($this->tryDestroyOnExpire ?? false) {
                 try {
                     $modelObject->forceDelete();
+                    $deleted = true;
                 } catch (Exception) {
                     $this->expireModel($modelObject);
                 }
@@ -57,7 +61,7 @@ trait HasExpireAction
             $this->afterExpire($request, $modelObject);
         });
 
-        return $this->withExpireResponse($modelObject);
+        return $this->withExpireResponse($modelObject, $deleted);
     }
 
     /**
@@ -92,12 +96,15 @@ trait HasExpireAction
 
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
+     * @param bool                                $deleted
      * @return array
      */
-    protected function withExpireResponse(Model $model): array
+    protected function withExpireResponse(Model $model, bool $deleted = false): array
     {
         return [
-            'message' => trans($this->deleteMessageKey ?? 'basic-crud::messages.expire-success')
+            'message' => $deleted ?
+                trans($this->deleteMessageKey ?? 'basic-crud::messages.delete-success') :
+                trans($this->expireMessageKey ?? 'basic-crud::messages.expire-success')
         ];
     }
 }
