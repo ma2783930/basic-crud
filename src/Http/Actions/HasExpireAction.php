@@ -70,10 +70,9 @@ trait HasExpireAction
      */
     private function expireModel($modelObject): void
     {
-        $modelObject->forceFill([
+        $modelObject->update([
             $modelObject->getExpiredAtColumn() => Carbon::now()
         ]);
-        $modelObject->save();
     }
 
     /**
