@@ -39,6 +39,10 @@ class BasicCrudRouteHelper
              ->name("{$this->prefix}.")
              ->controller($this->controller)
              ->group(function () use ($callback) {
+                 if (is_callable($callback)) {
+                     call_user_func($callback);
+                 }
+
                  if (method_exists(new $this->controller, 'index')) {
                      Route::post('index', 'index');
                  }
@@ -65,10 +69,6 @@ class BasicCrudRouteHelper
                  }
                  if (method_exists(new $this->controller, 'destroy')) {
                      Route::delete("{id}", 'destroy');
-                 }
-
-                 if (is_callable($callback)) {
-                     call_user_func($callback);
                  }
              });
     }
